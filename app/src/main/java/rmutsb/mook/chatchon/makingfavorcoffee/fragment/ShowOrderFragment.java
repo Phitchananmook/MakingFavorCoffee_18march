@@ -2,18 +2,23 @@ package rmutsb.mook.chatchon.makingfavorcoffee.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import rmutsb.mook.chatchon.makingfavorcoffee.R;
+import rmutsb.mook.chatchon.makingfavorcoffee.ultility.DeleteOrder;
 import rmutsb.mook.chatchon.makingfavorcoffee.ultility.GetOrderWhereIdLoginAnDateTime;
 import rmutsb.mook.chatchon.makingfavorcoffee.ultility.MyConstant;
 import rmutsb.mook.chatchon.makingfavorcoffee.ultility.ShowOrderAdapter;
@@ -22,10 +27,12 @@ import rmutsb.mook.chatchon.makingfavorcoffee.ultility.ShowOrderAdapter;
  * Created by Acer on 4/1/2561.
  */
 
+
 public class ShowOrderFragment extends Fragment{
 
-    private String[] loginString;
+    private String[] loginString, idStrings;
     private String DateTimestring;
+    private ListView listView;
 
     public static ShowOrderFragment showOrderInstance(String[] loginStrings,
                                                       String DateTimestring) {
@@ -56,7 +63,7 @@ public class ShowOrderFragment extends Fragment{
 
     private void createlistview() {
 
-        ListView listView = getView().findViewById(R.id.listViewOrder);
+        listView = getView().findViewById(R.id.listViewOrder);
         MyConstant myConstant = new MyConstant();
         String tag = "15FebV2";
 
@@ -71,9 +78,10 @@ public class ShowOrderFragment extends Fragment{
 
             JSONArray jsonArray = new JSONArray(resultJSON);
 
-            String[] nameStrings = new String[jsonArray.length()];
+            final String[] nameStrings = new String[jsonArray.length()];
             String[] typeStrings = new String[jsonArray.length()];
             String[] priceStrings = new String[jsonArray.length()];
+            idStrings = new String[jsonArray.length()];
 
             for (int i=0; i<jsonArray.length(); i+=1) {
 
@@ -81,12 +89,13 @@ public class ShowOrderFragment extends Fragment{
                 nameStrings[i] = jsonObject.getString("NameCoffee");
                 typeStrings[i] = jsonObject.getString("TypeCoffee");
                 priceStrings[i] = findPrice(jsonObject.getString("NameCoffee"));
+                idStrings[i] = jsonObject.getString("id");
 
             }
 
-            ShowOrderAdapter showOrderAdapter = new ShowOrderAdapter(getActivity(), nameStrings,
-                    typeStrings, priceStrings);
-            listView.setAdapter(showOrderAdapter);
+            buildListView(nameStrings, typeStrings, priceStrings);
+
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -95,6 +104,92 @@ public class ShowOrderFragment extends Fragment{
 
 
     }   // createListView
+
+    private void buildListView(final String[] nameStrings,
+                               final String[] typeStrings,
+                               final String[] priceStrings) {
+        ShowOrderAdapter showOrderAdapter = new ShowOrderAdapter(getActivity(), nameStrings,
+                typeStrings, priceStrings);
+        listView.setAdapter(showOrderAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Log.d("18MarchV1", "id delete ==> " + idStrings[position]);
+
+                String[] newNameStrings = findNewName(nameStrings, nameStrings[position]);
+                String[] newTypeString = findNewType(typeStrings, typeStrings[position]);
+                String[] newPriceStrings = findNewPrice(priceStrings, priceStrings[position]);
+                MyConstant myConstant = new MyConstant();
+
+                try {
+
+                    DeleteOrder deleteOrder = new DeleteOrder(getActivity());
+                    deleteOrder.execute(idStrings[position], myConstant.getUrlDeleteString());
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                buildListView(newNameStrings, newTypeString, newPriceStrings);
+
+            }
+        });
+    }
+
+    private String[] findNewPrice(String[] priceStrings, String deleteString) {
+
+        ArrayList<String> stringArrayList = new ArrayList<>();
+
+        for (int i=0; i<priceStrings.length; i+=1) {
+
+            stringArrayList.add(priceStrings[i]);
+
+        }
+
+        stringArrayList.remove(deleteString);
+
+        String resultString = stringArrayList.toString();
+        resultString = resultString.substring(1, resultString.length() - 1);
+
+        return resultString.split(",");
+    }
+
+    private String[] findNewType(String[] typeStrings, String deleteString) {
+        ArrayList<String> stringArrayList = new ArrayList<>();
+
+        for (int i=0; i<typeStrings.length; i+=1) {
+
+            stringArrayList.add(typeStrings[i]);
+
+        }
+
+        stringArrayList.remove(deleteString);
+
+        String resultString = stringArrayList.toString();
+        resultString = resultString.substring(1, resultString.length() - 1);
+
+        return resultString.split(",");
+    }
+
+    private String[] findNewName(String[] nameStrings, String deleteString) {
+        ArrayList<String> stringArrayList = new ArrayList<>();
+
+        for (int i=0; i<nameStrings.length; i+=1) {
+
+            stringArrayList.add(nameStrings[i]);
+
+        }
+
+        stringArrayList.remove(deleteString);
+
+        String resultString = stringArrayList.toString();
+        resultString = resultString.substring(1, resultString.length() - 1);
+
+        return resultString.split(",");
+    }
 
     private String findPrice(String nameCoffee) {
         return "25";

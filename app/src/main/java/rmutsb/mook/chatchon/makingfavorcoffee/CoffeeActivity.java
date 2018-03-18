@@ -11,12 +11,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import rmutsb.mook.chatchon.makingfavorcoffee.fragment.AmericanoFragment;
 import rmutsb.mook.chatchon.makingfavorcoffee.fragment.CappucchinoFragment;
 import rmutsb.mook.chatchon.makingfavorcoffee.fragment.EspressoFragment;
 import rmutsb.mook.chatchon.makingfavorcoffee.fragment.HomeScoreFragment;
 import rmutsb.mook.chatchon.makingfavorcoffee.fragment.LatteFragment;
 import rmutsb.mook.chatchon.makingfavorcoffee.fragment.MochaFragment;
+import rmutsb.mook.chatchon.makingfavorcoffee.fragment.ShowOrderFragment;
 import rmutsb.mook.chatchon.makingfavorcoffee.ultility.MyManager;
 
 public class CoffeeActivity extends AppCompatActivity implements View.OnClickListener {
@@ -55,14 +60,43 @@ public class CoffeeActivity extends AppCompatActivity implements View.OnClickLis
         createToolbar();
 
 //        Add Fragment to Activity
+        addFragment(savedInstanceState);
+
+//        Show Order
+        showOrder();
+
+    } // Main Method
+
+    private void showOrder() {
+
+        TextView textView = findViewById(R.id.txtShowListOrder);
+
+        Calendar calendar = Calendar.getInstance();
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        final String dateString = dateFormat.format(calendar.getTime());
+
+
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.contentFragmentCoffee,
+                                ShowOrderFragment.showOrderInstance(loginStrings, dateString))
+                        .commit();
+                drawerLayout.closeDrawers();
+
+            }
+        });
+    }
+
+    private void addFragment(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.contentFragmentCoffee, HomeScoreFragment.homeScoreInstance(loginStrings))
                     .commit();
         }
-
-
-    } // Main Method
+    }
 
     private void InitialControler() {
 
