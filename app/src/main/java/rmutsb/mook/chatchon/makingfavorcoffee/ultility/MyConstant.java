@@ -6,6 +6,8 @@ package rmutsb.mook.chatchon.makingfavorcoffee.ultility;
 
 public class MyConstant {
 
+    private String urlGetAllOrderStatus = "http://androidthai.in.th/nut/getAllStatus.php";
+    private String urlAddOrderDate = "http://androidthai.in.th/nut/addOrderDate.php";
     private String urlDeleteString = "http://androidthai.in.th/nut/deleteOrderWhereID.php";
     private String urlPostUserString = "http://androidthai.in.th/nut/addUserNut.php";
     private String urlGetUserString = "http://androidthai.in.th/nut/getAllDataNut.php";
@@ -17,6 +19,19 @@ public class MyConstant {
 
     private String[] columUserStrings = new String[]{"user_id", "user_Name", "user_Surname", "user_Phone", "user_Email", "user_Password"};
     private String[] columnShowOrderString = new String[]{"id", "idLogin", "NameCoffee", "TypeCoffee", "Espresso", "CocoPowder", "Milk", "FrappePowder", "Item", "DateTimeOder"};
+    private String[] statusStrings = new String[]{"Waiting", "Making Coffee", "Finish"};
+
+    public String[] getStatusStrings() {
+        return statusStrings;
+    }
+
+    public String getUrlAddOrderDate() {
+        return urlAddOrderDate;
+    }
+
+    public String getUrlGetAllOrderStatus() {
+        return urlGetAllOrderStatus;
+    }
 
     public String getUrlDeleteString() {
         return urlDeleteString;

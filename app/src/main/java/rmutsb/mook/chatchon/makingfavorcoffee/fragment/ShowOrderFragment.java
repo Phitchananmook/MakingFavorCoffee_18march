@@ -9,8 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -18,6 +20,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import rmutsb.mook.chatchon.makingfavorcoffee.R;
+import rmutsb.mook.chatchon.makingfavorcoffee.ultility.AddOrderDate;
 import rmutsb.mook.chatchon.makingfavorcoffee.ultility.DeleteOrder;
 import rmutsb.mook.chatchon.makingfavorcoffee.ultility.GetOrderWhereIdLoginAnDateTime;
 import rmutsb.mook.chatchon.makingfavorcoffee.ultility.MyConstant;
@@ -59,7 +62,49 @@ public class ShowOrderFragment extends Fragment{
 //        create listview
         createlistview();
 
+//        Confirm Controller
+        confirmController();
+
+
     }//main method
+
+    private void confirmController() {
+        Button button = getView().findViewById(R.id.btnConfirmOrder);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String Order_date = loginString[0] + "," + DateTimestring;
+
+                try {
+
+                    MyConstant myConstant = new MyConstant();
+                    AddOrderDate addOrderDate = new AddOrderDate(getActivity());
+                    addOrderDate.execute(Order_date, myConstant.getUrlAddOrderDate());
+                    String result = addOrderDate.get();
+                    Log.d("18MarchV1", "Result ==> " + result);
+
+                    if (Boolean.parseBoolean(result)) {
+
+                        getActivity().getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.contentFragmentCoffee, StatusFragment.statusInstant(Order_date))
+                                .commit();
+
+                    } else {
+                        Toast.makeText(getActivity(), "Error Cannot Save Order",
+                                Toast.LENGTH_SHORT).show();
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        });
+    }
 
     private void createlistview() {
 
