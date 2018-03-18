@@ -108,6 +108,15 @@ public class ShowOrderFragment extends Fragment{
     private void buildListView(final String[] nameStrings,
                                final String[] typeStrings,
                                final String[] priceStrings) {
+
+        TextView textView = getView().findViewById(R.id.txtTotelPrice);
+        int totalInt = 0;
+        for (int i=0; i<priceStrings.length; i+=1) {
+            totalInt = totalInt + Integer.parseInt(priceStrings[i].trim());
+        }
+        textView.setText("Total: " + Integer.toString(totalInt) + " THB");
+
+
         ShowOrderAdapter showOrderAdapter = new ShowOrderAdapter(getActivity(), nameStrings,
                 typeStrings, priceStrings);
         listView.setAdapter(showOrderAdapter);
